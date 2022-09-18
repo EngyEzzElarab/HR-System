@@ -6,6 +6,11 @@ import com.example.HRSystem.models.Team;
 import com.example.HRSystem.repositories.DepartmentRepository;
 import com.example.HRSystem.repositories.EmployeeRepository;
 import com.example.HRSystem.repositories.TeamRepository;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import org.dbunit.DataSourceBasedDBTestCase;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@DatabaseSetup("/dataset/Employees.xml")
 public class GetEmployeeTests {
     @Autowired
     private MockMvc mockMvc;
@@ -37,31 +45,13 @@ public class GetEmployeeTests {
 
     @Test
     public void testGetEmployeeInfo() throws Exception {
-        String str1 = "2015-03-31";
-        String str2 = "2023-03-31";
-        java.sql.Date date1 = java.sql.Date.valueOf(str1);
-        java.sql.Date date2 = java.sql.Date.valueOf(str2);
-        Employee e1 = Employee.builder()
-                .national(5557)
-                .name("ali")
-                .grossSalary(200000)
-                .birthDate(date1)
-                .gradDate(date2)
-                .department(departmentRepository.findDepartmentById(1))
-                .team(teamRepository.findTeamById(1))
-                .manager(null)
-                .isManager(true)
-                .gender(Gender.MALE)
-                .build();
-        Employee savedEmployee = employeeRepository.save(e1);
-        this.mockMvc.perform(get("/employees/{id}", savedEmployee.getId())
+        this.mockMvc.perform(get("/employees/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").hasJsonPath())
-                .andExpect(jsonPath("$.name", is("ali")))
+                .andExpect(jsonPath("$.name", is("khaled")))
                 .andExpect(jsonPath("$.gender", is("MALE")))
-                .andExpect(jsonPath("$.birthDate", is(str1)))
-                .andExpect(jsonPath("$.gradDate", is(str2)));
+                .andExpect(jsonPath("$.birthDate", is("2000-09-14")))
+                .andExpect(jsonPath("$.gradDate", is("2023-07-01")));
     }
-
 }

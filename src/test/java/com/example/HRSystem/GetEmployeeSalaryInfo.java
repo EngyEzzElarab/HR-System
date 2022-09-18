@@ -47,7 +47,6 @@ public class GetEmployeeSalaryInfo {
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(null)
-                .isManager(true)
                 .gender(Gender.MALE)
                 .build();
         Employee savedEmployee = employeeRepository.save(e);

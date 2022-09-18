@@ -14,6 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,49 +39,47 @@ public class GetEmployeesUnderManagerDirectlyTests {
 
     @Test
     public void testGetEmployeesDirectlyUnderAManager() throws Exception {
-        String str1 = "2015-03-31";
-        String str2 = "2023-03-31";
-        java.sql.Date date1 = java.sql.Date.valueOf(str1);
-        java.sql.Date date2 = java.sql.Date.valueOf(str2);
-        Employee e1 = Employee.builder()
+        Calendar calender = Calendar.getInstance();
+        calender.set(2015, 3, 31);
+        Date birthDate = calender.getTime();
+        calender.set(2015, 3, 31);
+        Date graduationDate = calender.getTime();
+        Employee firstEmployee = Employee.builder()
                 .national(3)
                 .name("khaled")
                 .grossSalary(10000)
-                .birthDate(date1)
-                .gradDate(date2)
+                .birthDate(birthDate)
+                .gradDate(graduationDate)
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(null)
-                .isManager(true)
                 .gender(Gender.MALE)
                 .build();
-        Employee manager = employeeRepository.save(e1);
-        Employee e2 = Employee.builder()
+        Employee manager = employeeRepository.save(firstEmployee);
+        Employee secondEmployee = Employee.builder()
                 .national(4)
                 .name("amany")
                 .grossSalary(15000)
-                .birthDate(date1)
-                .gradDate(date2)
+                .birthDate(birthDate)
+                .gradDate(graduationDate)
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(manager)
-                .isManager(false)
                 .gender(Gender.FEMALE)
                 .build();
-        Employee e3 = Employee.builder()
+        Employee thirdEmployee = Employee.builder()
                 .national(5)
                 .name("omar")
                 .grossSalary(15000)
-                .birthDate(date1)
-                .gradDate(date2)
+                .birthDate(birthDate)
+                .gradDate(graduationDate)
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(manager)
-                .isManager(false)
                 .gender(Gender.MALE)
                 .build();
-        Employee savedEmployee1 = employeeRepository.save(e2);
-        Employee savedEmployee2 = employeeRepository.save(e3);
+        employeeRepository.save(secondEmployee);
+        employeeRepository.save(thirdEmployee);
         this.mockMvc.perform(get("/employees/managers/{id}", manager.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

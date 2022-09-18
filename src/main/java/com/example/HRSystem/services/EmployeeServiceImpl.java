@@ -14,6 +14,7 @@ import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -30,15 +31,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private TeamRepository teamRepository;
     ModelMapper modelMapper = new ModelMapper();
+    final double taxPercentage = 0.85;
+    final int insurance = 500;
 
     @Override
-    public EmployeeDTO addEmployee(EmployeeCommand employeeCommand) {
+    public EmployeeDTO addEmployee(EmployeeCommand employeeCommand) throws Exception {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        Integer managerId = employeeCommand.getManagerId();
+        if (managerId != null && employeeRepository.findEmployeeById(employeeCommand.getManagerId()) == null) {
+            throw new Exception("There is no such manager!");
+        }
+        if (departmentRepository.findDepartmentById(employeeCommand.getDepartmentId()) == null) {
+            throw new Exception("There is no such department!");
+        }
+        if (teamRepository.findTeamById(employeeCommand.getTeamId()) == null) {
+            throw new Exception("There is no such team!");
+        }
         Employee employee = modelMapper.map(employeeCommand, Employee.class);
         employee.setManager(employeeRepository.findEmployeeById((employeeCommand.getManagerId())));
-        Employee e = employeeRepository.save(employee);
-        EmployeeDTO eDTO = modelMapper.map(e, EmployeeDTO.class);
-        eDTO.setIsManager(employeeCommand.isManager());
+        Employee savedEmployee = employeeRepository.save(employee);
+        EmployeeDTO eDTO = modelMapper.map(savedEmployee, EmployeeDTO.class);
         return eDTO;
     }
 
@@ -49,9 +61,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             oldEmployee.setManager(employeeRepository.findById(updateEmployeeCommand.getManagerId()).get());
         } else {
             oldEmployee.setManager(null);
-        }
-        if (Objects.nonNull(updateEmployeeCommand.isManager())) {
-            oldEmployee.setIsManager(updateEmployeeCommand.isManager());
         }
         if (Objects.nonNull(updateEmployeeCommand.getTeamId())) {
             oldEmployee.setTeam(teamRepository.findById(updateEmployeeCommand.getTeamId()).get());
@@ -64,61 +73,75 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         Employee employeeDB = employeeRepository.save(oldEmployee);
         EmployeeDTO eDTO = modelMapper.map(employeeDB, EmployeeDTO.class);
-        if(Objects.nonNull(updateEmployeeCommand.isManager()))
-            eDTO.setIsManager(updateEmployeeCommand.isManager());
         return eDTO;
 
     }
 
-    @Override
-    public String deleteEmployee(Integer id) {
-        Employee employee = employeeRepository.findEmployeeById(id);
-        if (employee == null)
-            return "Tis employee does not exist";
-
-
-        if (employee.isManager() == false) {
-            employeeRepository.deleteById(id);
-        } else {
-            if (employee.getManager() == null) {
-               return "can not delete this root manager";
-            } else {
-                employeeRepository.updateManagerIdForDeletion(employee.getManager().getId(),id);
-                employeeRepository.deleteById(id);
-            }
-        }
-        return "Deleted Successfully";
+    @Transactional
+    public void deleteTransaction(Employee manager, Employee employee) {
+        employeeRepository.updateManagerIdForDeletion(manager, employee);
+        employeeRepository.deleteById(employee.getId());
     }
 
     @Override
-    public EmployeeDTO getEmployee(Integer id) {
+    public void deleteEmployee(Integer id) throws Exception {
         Employee employee = employeeRepository.findEmployeeById(id);
+        if (employee == null)
+            throw new Exception("This employee does not exist");
+
+
+        if (employee.getEmployeesList() == null || employee.getEmployeesList().size() == 0) {
+            employeeRepository.deleteById(id);
+        } else {
+            if (employee.getManager() == null) {
+                throw new Exception("can not delete this root manager");
+            } else {
+                deleteTransaction(employee.getManager(), employee);
+            }
+        }
+    }
+
+    @Override
+    public EmployeeDTO getEmployee(Integer id) throws Exception {
+        Employee employee = employeeRepository.findEmployeeById(id);
+        if (employee == null)
+            throw new Exception("There is no such employee");
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        if (employee.getManager() != null)
+            employeeDTO.setManagerId(employee.getManager().getId());
         return employeeDTO;
     }
 
     @Override
-    public EmployeeSalaryDTO getEmployeeSalaryInfo(Integer id) {
+    public EmployeeSalaryDTO getEmployeeSalaryInfo(Integer id) throws Exception {
         Employee employee = employeeRepository.findEmployeeById(id);
+        if (employee == null)
+            throw new Exception("There is no such employee");
         EmployeeSalaryDTO employeeSalaryDTO = EmployeeSalaryDTO.builder()
                 .grossSalary(employee.getGrossSalary())
-                .netSalary((employee.getGrossSalary() * 0.85) - 500)
+                .netSalary((employee.getGrossSalary() * taxPercentage) - insurance)
                 .build();
         return employeeSalaryDTO;
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeesInATeam(Integer teamId) {
+    public List<EmployeeDTO> getEmployeesInATeam(Integer teamId) throws Exception {
         Team team = teamRepository.findTeamById(teamId);
+        if (team == null)
+            throw new Exception("There is no such team");
         List<Employee> listOfEmployees = employeeRepository.findByTeam(team);
-        List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(listOfEmployees, new TypeToken<List<EmployeeDTO>>() {
-        }.getType());
+        List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(
+                listOfEmployees,
+                new TypeToken<List<EmployeeDTO>>() {
+                }.getType());
         return listOfEmployeeDTOs;
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeesDirectlyUnderAManager(Integer id) {
+    public List<EmployeeDTO> getEmployeesDirectlyUnderAManager(Integer id) throws Exception {
         Employee manager = employeeRepository.findEmployeeById(id);
+        if (manager == null)
+            throw new Exception("There is no such manager");
         List<Employee> listOfEmployees = employeeRepository.findByManager(manager);
         List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(listOfEmployees, new TypeToken<List<EmployeeDTO>>() {
         }.getType());
@@ -126,7 +149,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeesUnderAManagerRec(Integer id) {
+    public List<EmployeeDTO> getEmployeesUnderAManagerRec(Integer id) throws Exception {
+        Employee manager = employeeRepository.findEmployeeById(id);
+        if (manager == null)
+            throw new Exception("There is no such manager");
         List<Employee> listOfEmployees = employeeRepository.findByManagerRec(id);
         List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(listOfEmployees, new TypeToken<List<EmployeeDTO>>() {
         }.getType());

@@ -29,44 +29,43 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @PostMapping(path = "/add")
-    public EmployeeDTO addNewEmployee(@Valid @RequestBody EmployeeCommand employeeCommand) {
+    public EmployeeDTO addNewEmployee(@Valid @RequestBody EmployeeCommand employeeCommand) throws Exception {
         return employeeService.addEmployee(employeeCommand);
     }
 
 
     @PutMapping(path = "/{id}")
-    public EmployeeDTO modifyEmployee(@PathVariable Integer id, @RequestBody UpdateEmployeeCommand updateEmployeeCommand)
-    {
-        return employeeService.updateEmployee(id,updateEmployeeCommand);
+    public EmployeeDTO modifyEmployee(@PathVariable Integer id, @RequestBody UpdateEmployeeCommand updateEmployeeCommand) {
+        return employeeService.updateEmployee(id, updateEmployeeCommand);
     }
 
-    @DeleteMapping(path="/{id}")
-    public String delete(@PathVariable Integer id) {
-        return employeeService.deleteEmployee(id);
+    @DeleteMapping(path = "/{id}")
+    public void delete(@PathVariable Integer id) throws Exception {
+        employeeService.deleteEmployee(id);
     }
+
     @GetMapping(path = "/{id}")
-    public EmployeeDTO getEmployee(@PathVariable Integer id)
-    {
+    public EmployeeDTO getEmployee(@PathVariable Integer id) throws Exception {
         return employeeService.getEmployee(id);
     }
+
     @GetMapping(path = "/{id}/salary")
-    public EmployeeSalaryDTO getEmployeeSalaryInfo(@PathVariable Integer id)
-    {
+    public EmployeeSalaryDTO getEmployeeSalaryInfo(@PathVariable Integer id) throws Exception {
         return employeeService.getEmployeeSalaryInfo(id);
     }
+
     @GetMapping(path = "/teams/{id}")
-    public List<EmployeeDTO> getEmployeesInATeam(@PathVariable Integer id)
-    {
+    public List<EmployeeDTO> getEmployeesInATeam(@PathVariable Integer id) throws Exception {
         return employeeService.getEmployeesInATeam(id);
     }
+
     @GetMapping(path = "/managers/{id}")
-    public List<EmployeeDTO> getEmployeesDirectlyUnderAManager(@PathVariable Integer id)
-    {
+    public List<EmployeeDTO> getEmployeesDirectlyUnderAManager(@PathVariable Integer id) throws Exception {
         return employeeService.getEmployeesDirectlyUnderAManager(id);
     }
+
     @GetMapping(path = "/managers/{id}/all")
-    public List<EmployeeDTO> getEmployeesUnderAManagerRec(@PathVariable Integer id)
-    {
+    public List<EmployeeDTO> getEmployeesUnderAManagerRec(@PathVariable Integer id) throws Exception {
         return employeeService.getEmployeesUnderAManagerRec(id);
     }
 }

@@ -8,7 +8,7 @@ import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,18 +34,18 @@ public class Employee {
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
-    private java.sql.Date birthDate;
+    private Date birthDate;
+    @Temporal(TemporalType.DATE)
     @Column(name = "grad_date")
-    private java.sql.Date gradDate;
+    private Date gradDate;
     @Column(name = "gross_salary")
     private double grossSalary;
     @Transient
     @Column(name = "net_salary")
     @Formula("(grossSalary * 0.85) - 500")
     private double netSalary;
-    @Column(name = "is_manager")
-    private Boolean isManager;
     @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "manager_id")
@@ -114,14 +114,6 @@ public class Employee {
 
     public void setNetSalary(double netSalary) {
         this.netSalary = netSalary;
-    }
-
-    public Boolean isManager() {
-        return isManager;
-    }
-
-    public void setIsManager(Boolean manager) {
-        isManager = manager;
     }
 
     public Department getDepartment() {

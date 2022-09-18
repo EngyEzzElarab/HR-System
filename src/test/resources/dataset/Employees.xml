@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <employee
+            id="1"
+            nationalId= "1000"
+            name= "khaled"
+            gender="MALE"
+            birthDate= "2000-09-14"
+            gradDate= "2023-07-01"
+            grossSalary="10000000"
+            isManager="true"
+            managerId="null"
+            departmentId="1"
+            teamId="1"
+    />
+    <employee
+            id ="2"
+            nationalId= "1001"
+            name= "amany"
+            gender="FEMALE"
+            birthDate= "2000-09-14"
+            gradDate= "2023-07-01"
+            grossSalary="300000"
+            isManager="false"
+            managerId="1"
+            departmentId="1"
+            teamId="1"
+    />
+</dataset>

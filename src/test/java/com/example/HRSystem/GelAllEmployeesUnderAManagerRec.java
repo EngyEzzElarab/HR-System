@@ -49,7 +49,6 @@ public class GelAllEmployeesUnderAManagerRec {
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(null)
-                .isManager(true)
                 .gender(Gender.MALE)
                 .build();
         Employee rootManager = employeeRepository.save(employee1);
@@ -62,7 +61,6 @@ public class GelAllEmployeesUnderAManagerRec {
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(rootManager)
-                .isManager(false)
                 .gender(Gender.FEMALE)
                 .build();
         Employee midManager = employeeRepository.save(employee2);
@@ -75,7 +73,6 @@ public class GelAllEmployeesUnderAManagerRec {
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(midManager)
-                .isManager(false)
                 .gender(Gender.MALE)
                 .build();
         Employee savedEmployee2 = employeeRepository.save(employee3);

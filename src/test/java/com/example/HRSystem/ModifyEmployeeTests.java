@@ -31,7 +31,6 @@ public class ModifyEmployeeTests {
     public void modifyingEmployeeWithAllAttributesTest() throws Exception {
         UpdateEmployeeCommand updatedEmployee =
                 UpdateEmployeeCommand.builder()
-                        .isManager(false)
                         .departmentId(1)
                         .teamId(1)
                         .managerId(null)
@@ -44,7 +43,6 @@ public class ModifyEmployeeTests {
                         .content(employeeAsString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").hasJsonPath())
-                .andExpect(jsonPath("$.isManager", is(false)))
                 .andExpect(jsonPath("$.managerId", is(nullValue())))
                 .andExpect(jsonPath("$.departmentId", is(1)))
                 .andExpect(jsonPath("$.teamId", is(1)));

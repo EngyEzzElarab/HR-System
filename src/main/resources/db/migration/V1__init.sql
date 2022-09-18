@@ -22,7 +22,6 @@ CREATE TABLE employee
     date_of_birth DATE                   NOT NULL,
     grad_date     DATE                   NOT NULL,
     gross_salary  DOUBLE                 NOT NULL,
-    is_manager    SMALLINT               NOT NULL,
     department_id INT                    NOT NULL,
     team_id       INT                    NOT NULL,
     manager_id    INT                    NULL,

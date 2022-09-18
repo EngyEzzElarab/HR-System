@@ -14,6 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import static org.hamcrest.Matchers.*;
 
 
@@ -38,36 +41,35 @@ public class GetEmployeesInATeam {
 
     @Test
     public void testGetEmployeesInATeam() throws Exception {
-        String str1 = "2015-03-31";
-        String str2 = "2023-03-31";
-        java.sql.Date date1 = java.sql.Date.valueOf(str1);
-        java.sql.Date date2 = java.sql.Date.valueOf(str2);
+        Calendar calender = Calendar.getInstance();
+        calender.set(2015, 3, 31);
+        Date birthDate = calender.getTime();
+        calender.set(2015, 3, 31);
+        Date graduationDate = calender.getTime();
         Employee e1 = Employee.builder()
                 .national(3)
                 .name("engy")
                 .grossSalary(10000)
-                .birthDate(date1)
-                .gradDate(date2)
+                .birthDate(birthDate)
+                .gradDate(graduationDate)
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(null)
-                .isManager(true)
                 .gender(Gender.FEMALE)
                 .build();
         Employee e2 = Employee.builder()
                 .national(4)
                 .name("amany")
                 .grossSalary(15000)
-                .birthDate(date1)
-                .gradDate(date2)
+                .birthDate(birthDate)
+                .gradDate(graduationDate)
                 .department(departmentRepository.findDepartmentById(1))
                 .team(teamRepository.findTeamById(1))
                 .manager(null)
-                .isManager(true)
                 .gender(Gender.FEMALE)
                 .build();
-        Employee savedEmployee1 = employeeRepository.save(e1);
-        Employee savedEmployee2 = employeeRepository.save(e2);
+        employeeRepository.save(e1);
+        employeeRepository.save(e2);
         this.mockMvc.perform(get("/employees/teams/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
