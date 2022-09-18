@@ -11,7 +11,7 @@ import java.sql.Date;
 //@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+//@Builder
 public class EmployeeDTO {
     private String name;
     private Gender gender;
@@ -86,15 +86,14 @@ public class EmployeeDTO {
         this.managerId = managerId;
     }
 
-    public EmployeeDTO(String name, Gender gender, java.sql.Date birthDate, java.sql.Date gradDate, Integer teamId, Integer departmentId, boolean isManager, Integer managerId) {
+    public EmployeeDTO(String name, Gender gender, java.sql.Date birthDate, java.sql.Date gradDate,Integer managerId, Integer departmentId,Integer teamId) {
         this.name = name;
         this.gender = gender;
         this.birthDate = birthDate;
         this.gradDate = gradDate;
-        this.teamId = teamId;
-        this.departmentId = departmentId;
-        this.isManager = isManager;
         this.managerId = managerId;
+        this.departmentId = departmentId;
+        this.teamId = teamId;
     }
 
 }

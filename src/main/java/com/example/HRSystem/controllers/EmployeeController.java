@@ -41,8 +41,8 @@ public class EmployeeController {
     }
 
     @DeleteMapping(path="/{id}")
-    public void delete(@PathVariable Integer id) {
-        employeeService.deleteEmployee(id);
+    public String delete(@PathVariable Integer id) {
+        return employeeService.deleteEmployee(id);
     }
     @GetMapping(path = "/{id}")
     public EmployeeDTO getEmployee(@PathVariable Integer id)

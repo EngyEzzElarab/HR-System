@@ -10,8 +10,11 @@ import com.example.HRSystem.repositories.DepartmentRepository;
 import com.example.HRSystem.repositories.EmployeeRepository;
 import com.example.HRSystem.repositories.TeamRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,24 +29,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     private DepartmentRepository departmentRepository;
     @Autowired
     private TeamRepository teamRepository;
+    ModelMapper modelMapper = new ModelMapper();
 
     @Override
     public EmployeeDTO addEmployee(EmployeeCommand employeeCommand) {
-        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         Employee employee = modelMapper.map(employeeCommand, Employee.class);
-        employee.setDepartment(departmentRepository.findDepartmentById(employeeCommand.getDepartmentId()));
-        employee.setTeam(teamRepository.findTeamById(employeeCommand.getTeamId()));
         employee.setManager(employeeRepository.findEmployeeById((employeeCommand.getManagerId())));
-        employee.setIsManager(employeeCommand.isManager());
         Employee e = employeeRepository.save(employee);
         EmployeeDTO eDTO = modelMapper.map(e, EmployeeDTO.class);
+        eDTO.setIsManager(employeeCommand.isManager());
         return eDTO;
     }
 
     @Override
     public EmployeeDTO updateEmployee(Integer id, UpdateEmployeeCommand updateEmployeeCommand) {
         Employee oldEmployee = employeeRepository.findById(id).get();
-        ModelMapper modelMapper = new ModelMapper();
         if (Objects.nonNull(updateEmployeeCommand.getManagerId())) {
             oldEmployee.setManager(employeeRepository.findById(updateEmployeeCommand.getManagerId()).get());
         } else {
@@ -63,33 +64,34 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         Employee employeeDB = employeeRepository.save(oldEmployee);
         EmployeeDTO eDTO = modelMapper.map(employeeDB, EmployeeDTO.class);
+        if(Objects.nonNull(updateEmployeeCommand.isManager()))
+            eDTO.setIsManager(updateEmployeeCommand.isManager());
         return eDTO;
 
     }
 
     @Override
-    public void deleteEmployee(Integer id) {
+    public String deleteEmployee(Integer id) {
         Employee employee = employeeRepository.findEmployeeById(id);
+        if (employee == null)
+            return "Tis employee does not exist";
+
 
         if (employee.isManager() == false) {
             employeeRepository.deleteById(id);
         } else {
             if (employee.getManager() == null) {
-                System.out.println("CAN NOT DELETE THIS MANAGER");
+               return "can not delete this root manager";
             } else {
-                Employee manager = employee.getManager();
-                List<Employee> oldManagerListOfEmp = manager.getEmployeesList();
-                oldManagerListOfEmp.addAll(employee.getEmployeesList());
-                oldManagerListOfEmp.remove(employee);
-                manager.setEmployeesList(oldManagerListOfEmp);
+                employeeRepository.updateManagerIdForDeletion(employee.getManager().getId(),id);
                 employeeRepository.deleteById(id);
             }
         }
+        return "Deleted Successfully";
     }
 
     @Override
     public EmployeeDTO getEmployee(Integer id) {
-        ModelMapper modelMapper = new ModelMapper();
         Employee employee = employeeRepository.findEmployeeById(id);
         EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
         return employeeDTO;
@@ -107,41 +109,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeDTO> getEmployeesInATeam(Integer teamId) {
-        ModelMapper modelMapper = new ModelMapper();
         Team team = teamRepository.findTeamById(teamId);
         List<Employee> listOfEmployees = employeeRepository.findByTeam(team);
-        List<EmployeeDTO> listOfEmployeeDTOs = new ArrayList<>();
-        for (int i = 0; i < listOfEmployees.size(); i++) {
-            EmployeeDTO employeeDTO = modelMapper.map(listOfEmployees.get(i), EmployeeDTO.class);
-            employeeDTO.setTeamId(listOfEmployees.get(i).getTeam().getId());
-            listOfEmployeeDTOs.add(employeeDTO);
-        }
+        List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(listOfEmployees, new TypeToken<List<EmployeeDTO>>() {
+        }.getType());
         return listOfEmployeeDTOs;
     }
 
     @Override
     public List<EmployeeDTO> getEmployeesDirectlyUnderAManager(Integer id) {
-        ModelMapper modelMapper = new ModelMapper();
         Employee manager = employeeRepository.findEmployeeById(id);
         List<Employee> listOfEmployees = employeeRepository.findByManager(manager);
-        return convertListManager(modelMapper, listOfEmployees);
+        List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(listOfEmployees, new TypeToken<List<EmployeeDTO>>() {
+        }.getType());
+        return listOfEmployeeDTOs;
     }
 
     @Override
     public List<EmployeeDTO> getEmployeesUnderAManagerRec(Integer id) {
-        ModelMapper modelMapper = new ModelMapper();
         List<Employee> listOfEmployees = employeeRepository.findByManagerRec(id);
-        List<EmployeeDTO> list = convertListManager(modelMapper,listOfEmployees);
-        return list;
-    }
-
-    private List<EmployeeDTO> convertListManager(ModelMapper modelMapper, List<Employee> listOfEmployees) {
-        List<EmployeeDTO> listOfEmployeeDTOs = new ArrayList<>();
-        for (int i = 0; i < listOfEmployees.size(); i++) {
-            EmployeeDTO employeeDTO = modelMapper.map(listOfEmployees.get(i), EmployeeDTO.class);
-            employeeDTO.setManagerId(listOfEmployees.get(i).getManager().getId());
-            listOfEmployeeDTOs.add(employeeDTO);
-        }
+        List<EmployeeDTO> listOfEmployeeDTOs = modelMapper.map(listOfEmployees, new TypeToken<List<EmployeeDTO>>() {
+        }.getType());
         return listOfEmployeeDTOs;
     }
 }
