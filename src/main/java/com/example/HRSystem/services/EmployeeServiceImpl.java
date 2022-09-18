@@ -130,9 +130,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeDTO> getEmployeesUnderAManagerRec(Integer id) {
         ModelMapper modelMapper = new ModelMapper();
-        Employee manager = employeeRepository.findEmployeeById(id);
-        List<Employee> listOfEmployees = employeeRepository.findByManagerRec(manager);
-        listOfEmployees.remove(0);
+        List<Employee> listOfEmployees = employeeRepository.findByManagerRec(id);
         List<EmployeeDTO> list = convertListManager(modelMapper,listOfEmployees);
         return list;
     }

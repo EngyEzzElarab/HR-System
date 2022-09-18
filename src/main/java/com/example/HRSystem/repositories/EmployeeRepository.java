@@ -18,7 +18,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
 
     List<Employee> findByManager(Employee manager);
 
-    String s = "WITH RECURSIVE SUBORDINATES AS (SELECT * FROM hr.employee WHERE manager_id is NULL UNION SELECT E.* FROM hr.employee  E INNER JOIN SUBORDINATES S ON E.manager_id = S.id) SELECT * FROM SUBORDINATES;";
+    String s = "WITH RECURSIVE SUBORDINATES AS (SELECT * FROM hr.employee WHERE manager_id = ?1 UNION SELECT E.* FROM hr.employee  E INNER JOIN SUBORDINATES S ON E.manager_id = S.id) SELECT * FROM SUBORDINATES;";
     @Query(value = s, nativeQuery = true)
-    List<Employee> findByManagerRec(Employee manager);
+    List<Employee> findByManagerRec(Integer managerId);
 }
