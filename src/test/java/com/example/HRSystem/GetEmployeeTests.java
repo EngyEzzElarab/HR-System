@@ -1,30 +1,25 @@
 package com.example.HRSystem;
 
-import com.example.HRSystem.enums.Gender;
-import com.example.HRSystem.models.Employee;
-import com.example.HRSystem.models.Team;
 import com.example.HRSystem.repositories.DepartmentRepository;
 import com.example.HRSystem.repositories.EmployeeRepository;
 import com.example.HRSystem.repositories.TeamRepository;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import org.dbunit.DataSourceBasedDBTestCase;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.sql.DataSource;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,7 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
-@DatabaseSetup("/dataset/Employees.xml")
+//@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+//        DirtiesContextTestExecutionListener.class,
+//        TransactionalTestExecutionListener.class,
+//        DbUnitTestExecutionListener.class })
+//@DatabaseSetup("/dataset/employee.xml")
 public class GetEmployeeTests {
     @Autowired
     private MockMvc mockMvc;
@@ -42,12 +41,13 @@ public class GetEmployeeTests {
     private TeamRepository teamRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
-
     @Test
+    @Transactional
+   // @DatabaseSetup("/dataset/employee.xml")
     public void testGetEmployeeInfo() throws Exception {
         this.mockMvc.perform(get("/employees/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()).andDo(print())
                 .andExpect(jsonPath("$").hasJsonPath())
                 .andExpect(jsonPath("$.name", is("khaled")))
                 .andExpect(jsonPath("$.gender", is("MALE")))

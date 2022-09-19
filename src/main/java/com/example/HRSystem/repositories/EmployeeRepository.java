@@ -30,4 +30,4 @@ public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
     @Modifying
     @Query("update Employee E set E.manager = ?1 where E.manager = ?2")
     void updateManagerIdForDeletion(Employee manager, Employee employeeToDelete);
-}
+   }

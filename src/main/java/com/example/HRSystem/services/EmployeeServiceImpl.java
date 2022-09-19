@@ -103,6 +103,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO getEmployee(Integer id) throws Exception {
+        List<Employee> employees = (List<Employee>) employeeRepository.findAll();
+        System.out.println(employees.get(0).getId());
         Employee employee = employeeRepository.findEmployeeById(id);
         if (employee == null)
             throw new Exception("There is no such employee");

@@ -4,12 +4,10 @@ import com.example.HRSystem.commands.EmployeeCommand;
 import com.example.HRSystem.enums.Gender;
 import com.example.HRSystem.repositories.EmployeeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -53,7 +51,7 @@ public class AddEmployeeTests {
 
     @Test
     @Transactional
-    //@DatabaseSetup("/dataset/Employees.xml")
+    //@DatabaseSetup("/dataset/employee.xml")
     public void testAddEmployeeWithAllFields() throws Exception {
         String employeeAsString = objectMapper.writeValueAsString(newEmployeeCommand);
         this.mockMvc.perform(post("/employees/add")
