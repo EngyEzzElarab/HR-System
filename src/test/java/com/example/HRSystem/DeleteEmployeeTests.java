@@ -5,6 +5,11 @@ import com.example.HRSystem.models.Employee;
 import com.example.HRSystem.repositories.DepartmentRepository;
 import com.example.HRSystem.repositories.EmployeeRepository;
 import com.example.HRSystem.repositories.TeamRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.java.Log;
+import org.assertj.core.internal.Arrays;
+import org.assertj.core.util.Lists;
+import org.hamcrest.collection.IsArrayContainingInOrder;
 import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +21,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
+import static org.hamcrest.Matchers.contains;
+import java.util.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@Log
 public class DeleteEmployeeTests {
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -42,65 +47,40 @@ public class DeleteEmployeeTests {
     private static Date graduationDate;
     private Employee toBeDeletedEmployee;
 
-
-    @BeforeEach
-    public void init() {
-        Calendar calender = Calendar.getInstance();
-        calender.set(2015, 3, 31);
-        birthDate = calender.getTime();
-        calender.set(2015, 3, 31);
-        graduationDate = calender.getTime();
-        toBeDeletedEmployee = Employee.builder()
-                .national(5555)
-                .name("ezz")
-                .gender(Gender.MALE)
-                .birthDate(birthDate)
-                .gradDate(graduationDate)
-                .grossSalary(3000000)
-                .department(departmentRepository.findDepartmentById(1))
-                .team(teamRepository.findTeamById(1))
-                .employeesList(null)
-                .manager(null)
-                .build();
-    }
-
     @Test
     @Transactional
     public void testDeleteEmployeeNotAManager() throws Exception {
-        toBeDeletedEmployee.setManager(employeeRepository.findEmployeeById(3));
-        Employee savedEmp = employeeRepository.save(toBeDeletedEmployee);
-        this.mockMvc.perform(delete("/employees/{id}", savedEmp.getId())
+        this.mockMvc.perform(delete("/employees/{id}", 3)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        Assertions.assertFalse(employeeRepository.existsById(savedEmp.getId()));
+        Assertions.assertFalse(employeeRepository.existsById(3));
     }
 
     @Test
     @Transactional
     public void testDeleteARootManager() throws Exception {
-        List<Employee> list = new ArrayList<Employee>();
-        list.add(employeeRepository.findEmployeeById(1));
-        toBeDeletedEmployee.setEmployeesList(list);
-        Employee savedEmp = employeeRepository.save(toBeDeletedEmployee);
-        this.mockMvc.perform(delete("/employees/{id}", savedEmp.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        Assertions.assertTrue(employeeRepository.existsById(savedEmp.getId()));
+       // Assertions.assertTrue(employeeRepository.existsById(1));
+        Throwable exception = assertThrows(Exception.class, () -> {
+            this.mockMvc.perform(delete("/employees/{id}", 1)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
+        assertTrue(exception.getMessage().contains("can not delete this root manager"));
     }
 
     @Test
     @Transactional
     public void testDeleteAManagerHavingManagers() throws Exception {
-        List<Employee> list = new ArrayList<Employee>();
-        list.add(employeeRepository.findEmployeeById(1));
-        toBeDeletedEmployee.setManager(employeeRepository.findEmployeeById(3));
-        Employee savedEmp = employeeRepository.save(toBeDeletedEmployee);
-        List<Employee> listOfEmployees = savedEmp.getEmployeesList();
-        Employee manager = savedEmp.getManager();
-
-        Assertions.assertFalse(employeeRepository.existsById(savedEmp.getId()));
-        Assertions.assertTrue(manager.getEmployeesList().contains(listOfEmployees));
-        Assertions.assertFalse(manager.getEmployeesList().contains(savedEmp));
-
+        ObjectMapper objectMapper =new ObjectMapper();
+        Employee employee = employeeRepository.findEmployeeById(2);
+        List<Employee> listOfEmployees = employee.getEmployeesList();
+        this.mockMvc.perform(delete("/employees/{id}", 2)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        ;
+        Employee manager = employeeRepository.findEmployeeById(1);
+        Assertions.assertFalse(employeeRepository.existsById(2));
+        Assertions.assertTrue(manager.getEmployeesList().containsAll(listOfEmployees));
+        //log.info("ListOfEmployees "+ objectMapper.writeValueAsString(listOfEmployees));
     }
 }

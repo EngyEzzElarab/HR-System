@@ -2,6 +2,7 @@ package com.example.HRSystem.models;
 
 import com.example.HRSystem.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.Formula;
@@ -36,9 +37,11 @@ public class Employee {
     private Gender gender;
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "dd-MM-yyyy")
     private Date birthDate;
     @Temporal(TemporalType.DATE)
     @Column(name = "grad_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,timezone = JsonFormat.DEFAULT_TIMEZONE,pattern = "dd-MM-yyyy")
     private Date gradDate;
     @Column(name = "gross_salary")
     private double grossSalary;
@@ -55,9 +58,11 @@ public class Employee {
     private List<Employee> employeesList;
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @JsonManagedReference
     private Department department;
     @ManyToOne
     @JoinColumn(name = "team_id")
+    @JsonBackReference
     private Team team;
 
     public Integer getNational() {

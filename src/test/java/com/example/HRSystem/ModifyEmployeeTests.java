@@ -31,21 +31,22 @@ public class ModifyEmployeeTests {
     public void modifyingEmployeeWithAllAttributesTest() throws Exception {
         UpdateEmployeeCommand updatedEmployee =
                 UpdateEmployeeCommand.builder()
-                        .departmentId(1)
-                        .teamId(1)
-                        .managerId(null)
-                        .grossSalary(50000)
+                        .departmentId(2)
+                        .teamId(2)
+                        .managerId(1)
                         .build();
         ObjectMapper objectMapper = new ObjectMapper();
         String employeeAsString = objectMapper.writeValueAsString(updatedEmployee);
-        mockMvc.perform(put("/employees/{id}", 2)
+        mockMvc.perform(put("/employees/{id}", 3)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(employeeAsString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").hasJsonPath())
-                .andExpect(jsonPath("$.managerId", is(nullValue())))
-                .andExpect(jsonPath("$.departmentId", is(1)))
-                .andExpect(jsonPath("$.teamId", is(1)));
+                .andExpect(jsonPath("$.managerId", is(1)))
+                .andExpect(jsonPath("$.departmentId", is(2)))
+                .andExpect(jsonPath("$.teamId", is(2)))
+        ;
+        //nullValue()
 
     }
 }

@@ -28,7 +28,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping(path = "/add")
+    @PostMapping(path = "")
     public EmployeeDTO addNewEmployee(@Valid @RequestBody EmployeeCommand employeeCommand) throws Exception {
         return employeeService.addEmployee(employeeCommand);
     }

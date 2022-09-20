@@ -39,54 +39,13 @@ public class GetEmployeesUnderManagerDirectlyTests {
 
     @Test
     public void testGetEmployeesDirectlyUnderAManager() throws Exception {
-        Calendar calender = Calendar.getInstance();
-        calender.set(2015, 3, 31);
-        Date birthDate = calender.getTime();
-        calender.set(2015, 3, 31);
-        Date graduationDate = calender.getTime();
-        Employee firstEmployee = Employee.builder()
-                .national(3)
-                .name("khaled")
-                .grossSalary(10000)
-                .birthDate(birthDate)
-                .gradDate(graduationDate)
-                .department(departmentRepository.findDepartmentById(1))
-                .team(teamRepository.findTeamById(1))
-                .manager(null)
-                .gender(Gender.MALE)
-                .build();
-        Employee manager = employeeRepository.save(firstEmployee);
-        Employee secondEmployee = Employee.builder()
-                .national(4)
-                .name("amany")
-                .grossSalary(15000)
-                .birthDate(birthDate)
-                .gradDate(graduationDate)
-                .department(departmentRepository.findDepartmentById(1))
-                .team(teamRepository.findTeamById(1))
-                .manager(manager)
-                .gender(Gender.FEMALE)
-                .build();
-        Employee thirdEmployee = Employee.builder()
-                .national(5)
-                .name("omar")
-                .grossSalary(15000)
-                .birthDate(birthDate)
-                .gradDate(graduationDate)
-                .department(departmentRepository.findDepartmentById(1))
-                .team(teamRepository.findTeamById(1))
-                .manager(manager)
-                .gender(Gender.MALE)
-                .build();
-        employeeRepository.save(secondEmployee);
-        employeeRepository.save(thirdEmployee);
-        this.mockMvc.perform(get("/employees/managers/{id}", manager.getId())
+        this.mockMvc.perform(get("/employees/managers/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].managerId", is(manager.getId())))
-                .andExpect(jsonPath("$[1].managerId", is(manager.getId())))
+                .andExpect(jsonPath("$[0].managerId", is(1)))
+                .andExpect(jsonPath("$[1].managerId", is(1)))
         ;
 
     }

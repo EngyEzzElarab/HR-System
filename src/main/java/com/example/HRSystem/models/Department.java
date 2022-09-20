@@ -1,5 +1,7 @@
 package com.example.HRSystem.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,9 +17,12 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+
+    @JsonBackReference
     @OneToMany(mappedBy = "department")
     private List<Employee> employeeList;
     @OneToMany(mappedBy = "dept")
+    @JsonBackReference
     private List<Team> teamList;
 
 //    public Department(String name, List<Employee> employeeList, List<Team> teamList) {

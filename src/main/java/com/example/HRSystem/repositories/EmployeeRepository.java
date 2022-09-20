@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 @Transactional
 public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
-    final String FIND_REC_QUERY = "WITH RECURSIVE SUBORDINATES AS (SELECT * FROM hr.employee WHERE manager_id = ?1 UNION SELECT E.* FROM hr.employee  E INNER JOIN SUBORDINATES S ON E.manager_id = S.id) SELECT * FROM SUBORDINATES;";
+    final String FIND_REC_QUERY = "WITH RECURSIVE SUBORDINATES AS (SELECT * FROM employee WHERE manager_id = ?1 UNION SELECT E.* FROM employee E INNER JOIN SUBORDINATES S ON E.manager_id = S.id) SELECT * FROM SUBORDINATES;";
 
     Employee findEmployeeByNational(int i);
 

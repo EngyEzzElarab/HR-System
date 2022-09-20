@@ -1,5 +1,6 @@
 package com.example.HRSystem.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,8 +19,10 @@ public class Team {
     private String name;
     @ManyToOne
     @JoinColumn(name = "department_ID")
+    @JsonManagedReference
     private Department dept;
     @OneToMany(mappedBy = "team")
+    @JsonManagedReference
     private Set<Employee> employees= new HashSet<>();
 
     public Integer getId() {

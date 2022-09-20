@@ -34,28 +34,12 @@ public class GetEmployeeSalaryInfo {
     private EmployeeRepository employeeRepository;
     @Test
     public void testGetEmployeeSalaryInfo() throws Exception {
-        String str1 = "2015-03-31";
-        String str2 = "2023-03-31";
-        java.sql.Date date1 = java.sql.Date.valueOf(str1);
-        java.sql.Date date2 = java.sql.Date.valueOf(str2);
-        Employee e = Employee.builder()
-                .national(1200)
-                .name("mohsen")
-                .grossSalary(1000)
-                .birthDate(date1)
-                .gradDate(date2)
-                .department(departmentRepository.findDepartmentById(1))
-                .team(teamRepository.findTeamById(1))
-                .manager(null)
-                .gender(Gender.MALE)
-                .build();
-        Employee savedEmployee = employeeRepository.save(e);
-        this.mockMvc.perform(get("/employees/{id}/salary", savedEmployee.getId())
+        this.mockMvc.perform(get("/employees/{id}/salary", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                  .andExpect(jsonPath("$").hasJsonPath())
-                .andExpect(jsonPath("$.grossSalary", is(1000.0)))
-                .andExpect(jsonPath("$.netSalary", is(350.0)));
+                .andExpect(jsonPath("$.grossSalary", is(100000.0)))
+                .andExpect(jsonPath("$.netSalary", is(84500.0)));
 
     }
 }

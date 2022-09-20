@@ -1,12 +1,14 @@
 package com.example.HRSystem.dtos;
 
 import com.example.HRSystem.enums.Gender;
+import com.example.HRSystem.models.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 //@Data
 @NoArgsConstructor
@@ -20,7 +22,6 @@ public class EmployeeDTO {
     private Integer teamId;
     private Integer departmentId;
     private Integer managerId;
-
     public String getName() {
         return name;
     }
@@ -76,6 +77,5 @@ public class EmployeeDTO {
     public void setManagerId(Integer managerId) {
         this.managerId = managerId;
     }
-
 
 }
