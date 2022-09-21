@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <department
+            id="1"
+            name="IT"
+    />
+    <department
+            id="2"
+            name="HR"
+    />
+</dataset>

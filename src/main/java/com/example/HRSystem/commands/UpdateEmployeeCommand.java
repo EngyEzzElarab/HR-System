@@ -15,12 +15,4 @@ public class UpdateEmployeeCommand {
     private Integer departmentId;
     private Integer managerId;
     private Integer grossSalary;
-
-    public boolean isManager() {
-        return isManager;
-    }
-
-    public void setIsManager(boolean manager) {
-        isManager = manager;
-    }
 }

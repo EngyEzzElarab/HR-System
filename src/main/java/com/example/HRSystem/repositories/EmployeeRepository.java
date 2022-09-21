@@ -18,7 +18,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
 
     Employee findEmployeeByNational(int i);
 
-    Employee findEmployeeById(Integer managerId);
+    Employee findEmployeeById(Integer employeeId);
 
     List<Employee> findByTeam(Team team);
 
