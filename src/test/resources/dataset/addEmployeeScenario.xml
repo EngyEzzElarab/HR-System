@@ -4,8 +4,10 @@
             id="1"
             name="IT"
     />
-    <department
-            id="2"
-            name="HR"
+    <team
+            id="1"
+            name="TeamA"
+            department_id="1"
     />
+
 </dataset>

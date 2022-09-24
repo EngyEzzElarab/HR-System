@@ -1,6 +1,7 @@
 package com.example.HRSystem.commands;
 
 import com.example.HRSystem.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,9 @@ public class EmployeeCommand {
     private Integer nationalId;
     private String name;
     private Gender gender;
+    //@JsonFormat(timezone = "Africa/Cairo", pattern = "yyyy-mm-dd")
     private Date birthDate;
+    //@JsonFormat(timezone = "Africa/Cairo", pattern = "yyyy-mm-dd")
     private Date gradDate;
     private double grossSalary;
     private Integer managerId;

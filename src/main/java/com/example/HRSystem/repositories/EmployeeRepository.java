@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 @Transactional
 public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
-    final String FIND_REC_QUERY = "WITH RECURSIVE SUBORDINATES AS (SELECT * FROM employee WHERE manager_id = ?1 UNION SELECT E.* FROM employee E INNER JOIN SUBORDINATES S ON E.manager_id = S.id) SELECT * FROM SUBORDINATES;";
+    final String FIND_REC_QUERY = "WITH RECURSIVE SUBORDINATES AS (SELECT * FROM employee WHERE manager_id = :manager UNION SELECT E.* FROM employee E INNER JOIN SUBORDINATES S ON E.manager_id = S.id) SELECT * FROM SUBORDINATES;";
 
     Employee findEmployeeByNational(int i);
 
@@ -25,9 +25,11 @@ public interface EmployeeRepository extends CrudRepository<Employee, Integer> {
     List<Employee> findByManager(Employee manager);
 
     @Query(value = FIND_REC_QUERY, nativeQuery = true)
-    List<Employee> findByManagerRec(Integer managerId);
+    List<Employee> findByManagerRec(@Param("manager") Integer managerId);
 
     @Modifying
     @Query("update Employee E set E.manager = ?1 where E.manager = ?2")
     void updateManagerIdForDeletion(Employee manager, Employee employeeToDelete);
    }
+
+

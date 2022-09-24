@@ -5,12 +5,18 @@ import com.example.HRSystem.models.Employee;
 import com.example.HRSystem.repositories.DepartmentRepository;
 import com.example.HRSystem.repositories.EmployeeRepository;
 import com.example.HRSystem.repositories.TeamRepository;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,26 +30,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        DbUnitTestExecutionListener.class })
 public class GelAllEmployeesUnderAManagerRec {
     @Autowired
     MockMvc mockMvc;
-    @Autowired
-    private DepartmentRepository departmentRepository;
-    @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private EmployeeRepository employeeRepository;
 
     @Test
+    @DatabaseSetup("/dataset/getEmployeesRecScenario.xml")
+    @Transactional
     public void testGetAllEmployeesUnderAManagerRec() throws Exception {
-        this.mockMvc.perform(get("/employees/managers/{id}/all", 1)
+        this.mockMvc.perform(get("/employees/managers/{id}/all", 50)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").exists())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].managerId", is(1)))
-                .andExpect(jsonPath("$[1].managerId", is(2)))
-                .andExpect(jsonPath("$[2].managerId", is(3)))
+                .andExpect(jsonPath("$[0].managerId", is(50)))
+                .andExpect(jsonPath("$[1].managerId", is(60)))
+                .andExpect(jsonPath("$[2].managerId", is(70)))
 
         ;
     }

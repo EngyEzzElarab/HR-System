@@ -12,10 +12,6 @@ public class MainApp {
     public static void main(String[] args) {
         SpringApplication.run(MainApp.class, args);
     }
-    @PostConstruct
-    public void init(){
-        TimeZone.setDefault(TimeZone.getTimeZone("egypt"));
-    }
 
 
 }

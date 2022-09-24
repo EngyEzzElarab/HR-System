@@ -35,11 +35,9 @@ public class Employee {
     private Gender gender;
     @Temporal(TemporalType.DATE)
     @Column(name = "date_of_birth")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "dd-MM-yyyy")
     private Date birthDate;
     @Temporal(TemporalType.DATE)
     @Column(name = "grad_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = JsonFormat.DEFAULT_TIMEZONE, pattern = "dd-MM-yyyy")
     private Date gradDate;
     @Column(name = "gross_salary")
     private double grossSalary;

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <department
+            id="1"
+            name="IT"
+    />
+    <team
+            id="1"
+            name="TeamA"
+            department_id="1"
+    />
+    <employee
+            id="50"
+            national_id= "1000"
+            name= "fofo"
+            gender= "MALE"
+            date_of_birth= "2000-09-14"
+            grad_date= "2023-07-01"
+            gross_salary="100.0"
+            department_id="1"
+            team_id="1"
+    />
+    <employee
+            id ="60"
+            national_id= "1001"
+            name= "sue"
+            gender= "FEMALE"
+            date_of_birth= "2000-09-14"
+            grad_date= "2023-07-01"
+            gross_salary="300.0"
+            department_id= "1"
+            team_id= "1"
+            manager_id = "50"
+    />
+    <employee
+            id ="70"
+            national_id= "1002"
+            name= "sue"
+            gender= "FEMALE"
+            date_of_birth= "2000-09-14"
+            grad_date= "2023-07-01"
+            gross_salary="300.0"
+            department_id= "1"
+            team_id= "1"
+            manager_id = "60"
+    />
+    <employee
+            id ="80"
+            national_id= "1003"
+            name= "sue"
+            gender= "FEMALE"
+            date_of_birth= "2000-09-14"
+            grad_date= "2023-07-01"
+            gross_salary="300.0"
+            department_id= "1"
+            team_id= "1"
+            manager_id = "70"
+    />
+</dataset>
